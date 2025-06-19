@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <title>Módulo CRUE - DGUE Osasco</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  
+  <style>
+/* ... (Seus estilos CSS existentes aqui, sem alterações) ... */
+
+#loginContainer {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 20px;
+  background: white;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+#userInfo {
+  text-align: right;
+  padding: 10px;
+  background: #f5f5f5;
+  margin-bottom: 15px;
+  border-radius: 4px;
+}
+
+.spinner {
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #047B04;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+#loadingOverlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Estilos para a tabela de relatório, já presentes e mantidos */
+.tabela-relatorio {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.tabela-relatorio th, 
+.tabela-relatorio td {
+  text-align: center;
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+.tabela-relatorio th {
+  background-color: #047B04;
+  color: white;
+}
+
+.tabela-relatorio tr:nth-child(even) {
+  background-color: #f8f8f8;
+}
+
+.tabela-relatorio tr:hover {
+  background-color: #f0f0f0;
+}
+
+.total-row {
+  font-weight: bold;
+  background-color: #e6f7ff !important;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background: #FCFEFC;
+  padding: 0;
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Cabeçalho Institucional */
+.header-osasco {
+  background-color: #047B04;
+  color: white;
+  padding: 12px;
+  text-align: center;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header-osasco h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.header-osasco h2 {
+  margin: 3px 0;
+  font-size: 20px;
+  font-weight: normal;
+}
+
+.header-osasco h3 {
+  margin: 3px 0;
+  font-size: 18px;
+  font-weight: normal;
+}
+
+.header-osasco .system-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 8px;
+  display: block;
+}
+
+/* Rodapé Institucional */
+.footer-osasco {
+  background-color: #047B04;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  font-size: 13px;
+  margin-top: 20px;
+  box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+}
+
+/* Container Principal */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* Formulários e Campos */
+.form-section {
+  background: white;
+  border-radius: 4px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -8px;
+}
+
+.form-group {
+  flex: 1;
+  min-width: 200px;
+  padding: 0 8px;
+  margin-bottom: 10px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+input[readonly] {
+  background-color: #f5f5f5;
+  color: #666;
+}
+
+.btn {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  margin-right: 8px;
+  margin-bottom: 8px;
+}
+
+.btn-primary {
+  background-color: #047B04;
+  color: white;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.status {
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+.status-success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-error {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.section-title {
+  font-size: 1.1em;
+  font-weight: bold;
+  margin: 15px 0 10px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #eee;
+}
+
+/* Estilos para Relatórios */
+#relatoriosSection {
+  display: none;
+  margin-top: 30px;
+  border-top: 1px solid #ccc;
+  padding-top: 20px;
+}
+
+/* ... (outros estilos) ... */
+
+/* Estilos para a tabela de relatório */
+.tabela-relatorio {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.tabela-relatorio th {
+  background-color: #047B04;
+  color: white;
+  padding: 12px;
+  text-align: center; /* Garante que os cabeçalhos estejam centralizados */
+}
+
+.tabela-relatorio td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  text-align: center; /* Mantém a centralização dos dados (se desejado) */
+}
+
+/* ... (resto dos estilos) ... */
+
+.tabela-relatorio tr:nth-child(even) {
+  background-color: #f8f8f8;
+}
+
+.tabela-relatorio tr:hover {
+  background-color: #f0f0f0;
+}
+
+.numero {
+  text-align: right;
+  font-family: monospace;
+}
+
+.total-row td {
+  font-weight: bold;
+  background-color: #e6f7ff;
+}
+
+.scrollable-table {
+  overflow-x: auto;
+  max-width: 100%;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+  </style>
+</head>
+
+<body>
+
+<div id="loginContainer" class="form-section" style="display: none;">
+  <h2 style="text-align: center;">Acesso ao Sistema CRUE</h2>
+  <div class="form-group">
+    <label for="loginEmail">E-mail institucional:</label>
+    <input type="email" id="loginEmail" placeholder="Seu e-mail cadastrado no RH">
+  </div>
+  <div class="form-group">
+    <label for="loginSenha">Senha:</label>
+    <input type="password" id="loginSenha" placeholder="Sua senha">
+  </div>
+  <div style="text-align: center; margin-top: 20px;">
+    <button class="btn btn-primary" onclick="fazerLogin()">Acessar</button>
+    </div>
+  <div id="loginStatus" class="status" style="display: none; margin-top: 15px;"></div>
+  
+  </div>
+
+<div id="loadingOverlay">
+  <div style="background:white; padding:20px; border-radius:5px; text-align:center;">
+    <p>Processando, por favor aguarde...</p>
+    <div class="spinner"></div>
+  </div>
+</div>
+
+<div id="appContainer" style="display: none;">
+  <div id="userInfo"></div>
+  
+<div class="header-osasco">
+  <h1>Prefeitura de Osasco</h1>
+  <h2>Secretaria de Saúde</h2>
+  <h3>Diretoria Geral de Urgência e Emergência</h3>
+  <span class="system-title">Censo de Pacientes DGUE - Módulo CRUE</span>
+</div>
+
+<div class="container">
+  <div id="buscaPacienteSection" class="form-section"> 
+    <div class="form-row">
+      <div class="form-group">
+        <label for="idPaciente">ID do Paciente:</label>
+        <input type="number" id="idPaciente" placeholder="Digite o ID">
+      </div>
+      <div class="form-group" style="align-self: flex-end;">
+        <button class="btn btn-primary" onclick="buscarHistorico()">Buscar Histórico</button>
+      </div>
+    </div>
+  </div>
+  
+  <div id="historicoDiv" class="form-section" style="display:none;">
+    <h3>Solicitações Anteriores:</h3>
+    <div id="listaSolicitacoes" class="historico-container"></div>
+    <button class="btn btn-primary" onclick="iniciarNovaSolicitacao()">➕ Nova Solicitação</button>
+  </div>
+  
+  <div id="status" class="status" style="display:none;"></div>
+  
+  <div id="novaSolicitacaoDiv" class="form-section" style="display:none;">
+    <h3>Solicitação CRUE</h3>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>ID Paciente:</label>
+        <input type="text" id="novo_idPaciente" readonly>
+      </div>
+      <div class="form-group">
+        <label>Nome:</label>
+        <input type="text" id="novo_nomePaciente">
+      </div>
+      <div class="form-group">
+        <label>Sexo:</label>
+        <input type="text" id="novo_sexo">
+      </div>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>Idade:</label>
+        <input type="text" id="novo_idade">
+      </div>
+      <div class="form-group">
+        <label>Leito:</label>
+        <input type="text" id="novo_leito">
+      </div>
+      <div class="form-group">
+        <label>Data Solicitação:</label>
+        <input type="date" id="novo_dataSolicitacao">
+      </div>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>Hora Solicitação:</label>
+        <input type="time" id="novo_horaSolicitacao">
+      </div>
+      <div class="form-group">
+        <label>Tipo de Movimento:</label>
+        <select id="novo_tipoMovimento">
+          <option value="">Selecione</option>
+          <option value="CRUE">CRUE</option>
+          <option value="Unidade">Unidade</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Recurso Solicitado:</label>
+        <input list="listaRecursos" id="novo_recursoSolicitado" placeholder="Digite ou escolha...">
+        <datalist id="listaRecursos"></datalist>
+      </div>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>Tipo Transporte Solicitado:</label>
+        <select id="novo_tipoTransporteSolicitado">
+          <option value="">Selecione</option>
+          <option value="Básico">Básico</option>
+          <option value="UTI">UTI</option>
+          <option value="Intermediário">Intermediário</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Médico Solicitante:</label>
+        <input type="text" id="novo_medicoSolicitante">
+      </div>
+    </div>
+    
+    <h4 class="section-title">Preenchimento pela Unidade (Pós-Liberação)</h4>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>Destino:</label>
+        <input type="text" id="novo_destino">
+      </div>
+      <div class="form-group">
+        <label>Médico:</label>
+        <input type="text" id="novo_medico">
+      </div>
+      <div class="form-group">
+        <label>Enfermagem:</label>
+        <input type="text" id="novo_enfermagem">
+      </div>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>Condutor:</label>
+        <input type="text" id="novo_condutor">
+      </div>
+      <div class="form-group">
+        <label>Número da Viatura:</label>
+        <input type="text" id="novo_numeroViatura">
+      </div>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>Hora da Saída:</label>
+        <input type="time" id="novo_horaSaida">
+      </div>
+      <div class="form-group">
+        <label>Hora do Retorno:</label>
+        <input type="time" id="novo_horaRetorno">
+      </div>
+    </div>
+    
+    <h4 class="section-title secao-regulacao">Dados de Regulação (Somente Leitura)</h4>
+    
+    <div class="form-row secao-regulacao">
+      <div class="form-group">
+        <label>Recurso Regulado:</label>
+        <input type="text" id="novo_recursoRegulado" readonly>
+      </div>
+      <div class="form-group">
+        <label>Executante:</label>
+        <input type="text" id="novo_executante" readonly>
+      </div>
+      <div class="form-group">
+        <label>Situação:</label>
+        <input type="text" id="novo_situacao" readonly>
+      </div>
+    </div>
+    
+    <div class="form-row secao-regulacao">
+      <div class="form-group">
+        <label>Hora da Regulação:</label>
+        <input type="text" id="novo_horaRegulacao" readonly>
+      </div>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group" style="flex: 1 1 100%;">
+        <label>Observações:</label>
+        <textarea id="novo_observacoes" rows="3" style="width:100%;"></textarea>
+      </div>
+    </div>
+
+    <div style="margin-top: 20px;">
+      <button class="btn btn-primary" onclick="gravarNovaSolicitacao()">✅ Salvar</button>
+      <button class="btn btn-secondary" onclick="voltarParaInicio()">⬅️ Cancelar</button>
+    </div>
+  </div>
+  
+  <div id="relatoriosSection">
+    <h3>📊 Relatórios</h3>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>Tipo de Relatório:</label>
+        <select id="tipoRelatorio">
+          <option value="">Selecione...</option>
+          <option value="recurso_solicitado">Recurso Solicitado</option>
+          <option value="tipo_solicitacao">Tipo de Solicitação (CRUE/Interno)</option>
+          <option value="tipo_transporte">Tipo de Transporte</option>
+          <option value="executante">Executante</option>
+        </select>
+      </div>
+      <div id="filtroAdicional" style="display: none;">
+        <div class="form-group">
+          <label for="filtroEspecifico">Filtrar por:</label>
+          <select id="filtroEspecifico" class="form-control"></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Data Início:</label>
+        <input type="date" id="dataInicio">
+      </div>
+      
+      <div class="form-group">
+        <label>Data Fim:</label>
+        <input type="date" id="dataFim">
+      </div>
+    </div>
+    
+    <button class="btn btn-primary" onclick="gerarRelatorio()">Gerar Relatório</button>
+    <button class="btn btn-secondary" onclick="exportarParaExcel()" id="btnExportar" style="display:none;">Exportar para Excel</button>
+    
+    <div id="resultadoRelatorio" style="margin-top: 20px;"></div>
+  </div>
+  
+  <button class="btn btn-primary" onclick="toggleRelatorios()" style="margin-top: 20px;">
+    📊 Mostrar Relatórios
+  </button>
+</div>
+
+<footer class="footer-osasco">
+  Desenvolvido pelo CAP-DGUE - 2025
+  Construindo a Excelência com Qualidade, Segurança e Inovação
+</footer>
+
+<script>
+// Variáveis globais
+let historicoSolicitacoes = [];
+let solicitacaoEmEdicao = null;
+let usuarioEmailLogado = null; // Armazena o email do usuário logado para uso no "Sair" ou em funcionalidades futuras.
+
+// ================== FUNÇÕES DE AUTENTICAÇÃO ================== //
+
+function fazerLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const senha = document.getElementById('loginSenha').value;
+  
+  if (!email || !senha) {
+    mostrarLoginStatus('Preencha e-mail e senha', false);
+    return;
+  }
+
+  mostrarLoading(true);
+  mostrarLoginStatus('Autenticando...');
+  
+  google.script.run
+    .withSuccessHandler(function(resposta) {
+      usuarioEmailLogado = email; 
+      mostrarLoading(false);
+      
+      document.getElementById('loginContainer').style.display = 'none';
+      document.getElementById('appContainer').style.display = 'block';
+      
+      document.getElementById('userInfo').innerHTML = `
+        <span style="margin-right: 15px;">${resposta.nome}</span>
+        <button class="btn btn-secondary" onclick="sair()">Sair</button>
+      `;
+      
+      carregarPermissoesUsuario(); 
+      carregarListaRecursos();
+    })
+    .withFailureHandler(function(erro) {
+      mostrarLoading(false);
+      mostrarLoginStatus(erro.message, false);
+      console.error('Erro no login:', erro);
+    })
+    .fazerLogin(email, senha);
+}
+
+// Funções de troca de senha (mantidas no código, mas o botão está comentado no HTML)
+function mostrarTrocaSenha() {
+  document.getElementById('loginContainer').style.display = 'none';
+  document.getElementById('trocaSenhaContainer').style.display = 'block';
+  document.getElementById('trocaSenhaStatus').style.display = 'none';
+  document.getElementById('trocaSenhaStatus').textContent = '';
+  // Garante que o elemento existe antes de tentar atribuir
+  const loginEmailValue = document.getElementById('loginEmail').value.trim();
+  const trocaSenhaEmailInput = document.getElementById('trocaSenhaEmail');
+  if (trocaSenhaEmailInput) {
+    trocaSenhaEmailInput.value = loginEmailValue;
+  } else {
+    // Isso deve ser depurado no console se ainda acontecer!
+    console.error("Elemento 'trocaSenhaEmail' não encontrado no HTML! Verifique o HTML da div trocaSenhaContainer.");
+    mostrarTrocaSenhaStatus("Erro interno: campo de e-mail da troca de senha não encontrado.", false);
+    // Opcional: Voltar para a tela de login se o elemento não for encontrado
+    document.getElementById('loginContainer').style.display = 'block';
+    document.getElementById('trocaSenhaContainer').style.display = 'none';
+  }
+}
+
+function esconderTrocaSenha() {
+  document.getElementById('trocaSenhaContainer').style.display = 'none';
+  document.getElementById('loginContainer').style.display = 'block';
+  document.getElementById('trocaSenhaEmail').value = '';
+  document.getElementById('senhaAtual').value = '';
+  document.getElementById('novaSenha').value = '';
+  document.getElementById('confirmaSenha').value = '';
+  document.getElementById('trocaSenhaStatus').style.display = 'none';
+  document.getElementById('trocaSenhaStatus').textContent = '';
+}
+
+function trocarSenha() {
+  const emailParaTroca = document.getElementById('trocaSenhaEmail').value.trim(); 
+  const senhaAtual = document.getElementById('senhaAtual').value;
+  const novaSenha = document.getElementById('novaSenha').value;
+  const confirmaSenha = document.getElementById('confirmaSenha').value;
+  
+  if (!emailParaTroca || !senhaAtual || !novaSenha || !confirmaSenha) {
+    mostrarTrocaSenhaStatus('Preencha todos os campos, incluindo o e-mail.', false);
+    return;
+  }
+  
+  if (novaSenha !== confirmaSenha) {
+    mostrarTrocaSenhaStatus('As novas senhas não conferem', false);
+    return;
+  }
+  
+  mostrarTrocaSenhaStatus('Atualizando senha...');
+  mostrarLoading(true);
+  
+  google.script.run
+    .withSuccessHandler(function(resposta) {
+      mostrarLoading(false);
+      mostrarTrocaSenhaStatus(resposta.message, true);
+      setTimeout(() => {
+        esconderTrocaSenha();
+        document.getElementById('loginEmail').value = ''; 
+        document.getElementById('loginSenha').value = '';
+      }, 2000); 
+    })
+    .withFailureHandler(function(erro) {
+      mostrarLoading(false);
+      mostrarTrocaSenhaStatus(erro.message, false);
+      console.error('Erro na troca de senha:', erro);
+    })
+    .atualizarSenha(emailParaTroca, senhaAtual, novaSenha); 
+}
+
+function sair() {
+  usuarioEmailLogado = null; 
+  document.getElementById('appContainer').style.display = 'none';
+  document.getElementById('loginContainer').style.display = 'block';
+  document.getElementById('loginEmail').value = '';
+  document.getElementById('loginSenha').value = '';
+  document.getElementById('loginStatus').style.display = 'none';
+  document.getElementById('loginStatus').textContent = '';
+  document.getElementById('userInfo').innerHTML = ''; 
+  carregarListaRecursos(); 
+}
+
+function mostrarLoginStatus(mensagem, sucesso = true) {
+  const statusDiv = document.getElementById('loginStatus');
+  statusDiv.textContent = mensagem;
+  statusDiv.className = sucesso ? 'status status-success' : 'status status-error';
+  statusDiv.style.display = 'block';
+}
+
+function mostrarTrocaSenhaStatus(mensagem, sucesso = true) {
+  const statusDiv = document.getElementById('trocaSenhaStatus');
+  statusDiv.textContent = mensagem;
+  statusDiv.className = sucesso ? 'status status-success' : 'status status-error';
+  statusDiv.style.display = 'block';
+}
+
+function carregarPermissoesUsuario() {
+  const btnNovaSolicitacao = document.querySelector('#historicoDiv button.btn-primary');
+  if (btnNovaSolicitacao) {
+    btnNovaSolicitacao.style.display = 'inline-block'; 
+  }
+  
+  document.querySelectorAll('.secao-regulacao').forEach(el => {
+    el.style.display = 'flex'; 
+  });
+  document.querySelectorAll('.section-title.secao-regulacao').forEach(el => {
+    el.style.display = 'block';
+  });
+}
+
+function mostrarLoading(mostrar) {
+  document.getElementById('loadingOverlay').style.display = mostrar ? 'flex' : 'none';
+}
+
+// ================== FUNÇÕES DE RELATÓRIOS E OPERAÇÕES ================== //
+
+// Função adicionada para ocultar as seções principais
+function ocultarSecoesPrincipais() {
+  const buscaPacienteSection = document.getElementById('buscaPacienteSection');
+  const historicoDiv = document.getElementById('historicoDiv');
+  const novaSolicitacaoDiv = document.getElementById('novaSolicitacaoDiv');
+  const statusDiv = document.getElementById('status'); // Opcional, para ocultar mensagens de status antigas
+
+  if (buscaPacienteSection) {
+    buscaPacienteSection.style.display = 'none';
+  }
+  if (historicoDiv) {
+    historicoDiv.style.display = 'none';
+  }
+  if (novaSolicitacaoDiv) {
+    novaSolicitacaoDiv.style.display = 'none';
+  }
+  if (statusDiv) {
+    statusDiv.style.display = 'none';
+  }
+}
+
+function gerarRelatorio() {
+  const tipo = document.getElementById('tipoRelatorio').value;
+  const dataInicio = document.getElementById('dataInicio').value;
+  const dataFim = document.getElementById('dataFim').value;
+  const filtroEspecifico = document.getElementById('filtroEspecifico').value;
+  
+  if (!tipo) {
+    mostrarStatus('Selecione um tipo de relatório!', false);
+    return;
+  }
+
+  const filtros = {
+    dataInicio: dataInicio,
+    dataFim: dataFim
+  };
+  
+  if (tipo === 'tipo_transporte') {
+    filtros.subtipo = filtroEspecifico;
+  }
+
+  mostrarLoading(true);
+  
+  google.script.run
+    .withSuccessHandler(function(resultado) {
+      mostrarLoading(false);
+      ocultarSecoesPrincipais(); // CHAMA PARA OCULTAR AS SEÇÕES ANTES DE EXIBIR O RELATÓRIO
+      exibirResultado(resultado);
+    })
+    .withFailureHandler(function(error) {
+      mostrarLoading(false);
+      mostrarStatus('Erro ao gerar relatório: ' + error.message, false);
+      console.error('Erro detalhado:', error);
+    })
+    .gerarRelatorioCRUE(tipo, filtros); 
+}
+
+function exportarParaExcel() {
+  const tipo = document.getElementById('tipoRelatorio').value;
+  const dataInicio = document.getElementById('dataInicio').value;
+  const dataFim = document.getElementById('dataFim').value;
+  const filtroEspecifico = document.getElementById('filtroEspecifico').value;
+
+  const filtros = {
+    dataInicio: dataInicio, 
+    dataFim: dataFim 
+  };
+
+  if (tipo === 'tipo_transporte') {
+    filtros.subtipo = filtroEspecifico;
+  }
+
+  mostrarLoading(true);
+
+  google.script.run
+    .withSuccessHandler(function(url) {
+      mostrarLoading(false);
+      if (url) {
+        window.open(url, '_blank');
+      } else {
+        mostrarStatus('Não foi possível gerar o link para exportação.', false);
+      }
+    })
+    .withFailureHandler(function(error) {
+      mostrarLoading(false);
+      mostrarStatus('Erro ao exportar: ' + error.message, false);
+    })
+    .exportarRelatorioExcel(tipo, filtros); 
+}
+
+function mostrarStatus(mensagem, sucesso = true) {
+  const statusDiv = document.getElementById('status');
+  statusDiv.innerText = mensagem;
+  statusDiv.className = sucesso ? 'status status-success' : 'status status-error';
+  statusDiv.style.display = 'block';
+}
+
+function buscarHistorico() {
+  const idPaciente = document.getElementById('idPaciente').value;
+  
+  if (!idPaciente) {
+    mostrarStatus('Por favor, informe o ID do paciente.', false);
+    return;
+  }
+
+  mostrarLoading(true);
+  mostrarStatus('Buscando histórico...');
+  
+  google.script.run
+    .withSuccessHandler(function(res) {
+      mostrarLoading(false);
+      // Ao buscar histórico, garantimos que outras seções estejam ocultas
+      ocultarSecoesPrincipais(); 
+      // Em seguida, exibimos apenas o histórico
+      historicoSolicitacoes = res;
+      const listaDiv = document.getElementById('listaSolicitacoes');
+      listaDiv.innerHTML = '';
+      
+      if (!res || res.length === 0) {
+        listaDiv.innerHTML = '<p>Nenhum histórico encontrado.</p>';
+      } else {
+        res.forEach(function(item) {
+          const divItem = document.createElement('div');
+          divItem.style.marginBottom = '10px';
+          
+          const btnEditar = document.createElement('button');
+          btnEditar.textContent = `✏️ ${item.idSolicitacao} | ${item.data} ${item.hora} | ${item.tipoMovimento}`;
+          btnEditar.className = 'btn btn-primary';
+          btnEditar.style.marginRight = '5px';
+          btnEditar.onclick = function() { editarSolicitacao(item.idSolicitacao); };
+          divItem.appendChild(btnEditar);
+          
+          const btnExcluir = document.createElement('button');
+          btnExcluir.textContent = '🗑️';
+          btnExcluir.className = 'btn btn-secondary';
+          btnExcluir.onclick = function() {
+            if (confirm(`Tem certeza que deseja excluir a solicitação ${item.idSolicitacao}?`)) {
+              excluirSolicitacao(item.idSolicitacao);
+            }
+          };
+          divItem.appendChild(btnExcluir);
+
+          listaDiv.appendChild(divItem);
+        });
+      }
+      document.getElementById('historicoDiv').style.display = 'block';
+      mostrarStatus('Histórico carregado com sucesso.', true);
+      // Mostra novamente a seção de busca do paciente
+      document.getElementById('buscaPacienteSection').style.display = 'block';
+    })
+    .withFailureHandler(function(error) {
+      mostrarLoading(false);
+      mostrarStatus('Erro ao buscar histórico: ' + error.message, false);
+      console.error('Erro detalhado:', error);
+      // Garante que a seção de busca do paciente esteja visível em caso de erro
+      document.getElementById('buscaPacienteSection').style.display = 'block';
+    })
+    .obterUltimasSolicitacoesPorPaciente(idPaciente); 
+}
+
+function iniciarNovaSolicitacao() {
+  const idPaciente = document.getElementById('idPaciente').value;
+  if (!idPaciente) {
+    mostrarStatus('Por favor, digite o ID do paciente antes de iniciar.', false);
+    return;
+  }
+
+  solicitacaoEmEdicao = null;  
+  mostrarLoading(true);
+
+  google.script.run
+    .withSuccessHandler(function(paciente) {
+      mostrarLoading(false);
+      if (!paciente) {
+        mostrarStatus('Paciente não encontrado.', false);
+        return;
+      }
+      
+      ocultarSecoesPrincipais(); // Oculta tudo antes de mostrar o formulário de nova solicitação
+
+      document.getElementById('novo_idPaciente').value = idPaciente;
+      document.getElementById('novo_nomePaciente').value = paciente.nome || '';
+      document.getElementById('novo_sexo').value = paciente.sexo || '';
+      document.getElementById('novo_idade').value = paciente.idade || '';
+      document.getElementById('novo_leito').value = paciente.leito || '';
+
+      document.getElementById('novaSolicitacaoDiv').style.display = 'block';
+      mostrarStatus('Iniciando nova solicitação...');
+    })
+    .withFailureHandler(function(error) {
+      mostrarLoading(false);
+      mostrarStatus('Erro ao buscar paciente: ' + error.message, false);
+    })
+    .obterDadosPacientePorId(idPaciente); 
+}
+
+function editarSolicitacao(idSolicitacao) {
+  mostrarStatus('Carregando solicitação para edição...');
+  mostrarLoading(true);
+
+  google.script.run
+    .withSuccessHandler(function(dados) {
+      mostrarLoading(false);
+      if (!dados) {
+        mostrarStatus('Solicitação não encontrada', false);
+        return;
+      }
+      
+      ocultarSecoesPrincipais(); // Oculta tudo antes de mostrar o formulário de edição
+
+      document.getElementById('novo_idPaciente').value = dados.idPaciente;
+      document.getElementById('novo_nomePaciente').value = dados.nomePaciente;
+      document.getElementById('novo_sexo').value = dados.sexo;
+      document.getElementById('novo_idade').value = dados.idade;
+      document.getElementById('novo_leito').value = dados.leito;
+      document.getElementById('novo_dataSolicitacao').value = dados.dataSolicitacao;
+      document.getElementById('novo_horaSolicitacao').value = dados.horaSolicitacao;
+      document.getElementById('novo_tipoMovimento').value = dados.tipoMovimento;
+      document.getElementById('novo_recursoSolicitado').value = dados.recursoSolicitado;
+      document.getElementById('novo_tipoTransporteSolicitado').value = dados.tipoTransporteSolicitado;
+      document.getElementById('novo_medicoSolicitante').value = dados.medicoSolicitante;
+
+      document.getElementById('novo_destino').value = dados.destino || '';
+      document.getElementById('novo_medico').value = dados.medico || '';
+      document.getElementById('novo_enfermagem').value = dados.enfermagem || '';
+      document.getElementById('novo_condutor').value = dados.condutor || '';
+      document.getElementById('novo_numeroViatura').value = dados.numeroViatura || '';
+      document.getElementById('novo_horaSaida').value = dados.horaSaida || '';
+      document.getElementById('novo_horaRetorno').value = dados.horaRetorno || '';
+      document.getElementById('novo_observacoes').value = dados.observacoes || '';
+      
+      document.getElementById('novo_recursoRegulado').value = dados.recursoRegulado || '';
+      document.getElementById('novo_executante').value = dados.executante || '';
+      document.getElementById('novo_situacao').value = dados.situacao || '';
+      document.getElementById('novo_horaRegulacao').value = dados.horaRegulacao || '';
+
+      solicitacaoEmEdicao = {
+        idSolicitacao: dados.idSolicitacao,
+        linhaIndex: dados.linhaIndex
+      };
+
+      document.getElementById('novaSolicitacaoDiv').style.display = 'block';
+      mostrarStatus('Edite os campos necessários e clique em Salvar');
+    })
+    .withFailureHandler(function(error) {
+      mostrarLoading(false);
+      mostrarStatus('Erro ao carregar: ' + error.message, false);
+    })
+    .obterSolicitacaoPorId(idSolicitacao);
+}
+
+function gravarNovaSolicitacao() {
+  const dados = {
+    idPaciente: document.getElementById('novo_idPaciente').value,
+    nomePaciente: document.getElementById('novo_nomePaciente').value,
+    sexo: document.getElementById('novo_sexo').value,
+    idade: document.getElementById('novo_idade').value,
+    leito: document.getElementById('novo_leito').value,
+    dataSolicitacao: document.getElementById('novo_dataSolicitacao').value,
+    horaSolicitacao: document.getElementById('novo_horaSolicitacao').value,
+    tipoMovimento: document.getElementById('novo_tipoMovimento').value,
+    recursoSolicitado: document.getElementById('novo_recursoSolicitado').value,
+    tipoTransporteSolicitado: document.getElementById('novo_tipoTransporteSolicitado').value,
+    medicoSolicitante: document.getElementById('novo_medicoSolicitante').value,
+    destino: document.getElementById('novo_destino').value,
+    medico: document.getElementById('novo_medico').value,
+    enfermagem: document.getElementById('novo_enfermagem').value,
+    condutor: document.getElementById('novo_condutor').value,
+    numeroViatura: document.getElementById('novo_numeroViatura').value,
+    horaSaida: document.getElementById('novo_horaSaida').value,
+    horaRetorno: document.getElementById('novo_horaRetorno').value,
+    observacoes: document.getElementById('novo_observacoes').value,
+    recursoRegulado: document.getElementById('novo_recursoRegulado').value,
+    executante: document.getElementById('novo_executante').value,
+    situacao: document.getElementById('novo_situacao').value,
+    horaRegulacao: document.getElementById('novo_horaRegulacao').value
+  };
+
+  if (!validarDadosSolicitacao(dados)) return;
+
+  mostrarLoading(true);
+
+  if (solicitacaoEmEdicao) {
+    dados.linhaIndex = solicitacaoEmEdicao.linhaIndex;
+    dados.idSolicitacao = solicitacaoEmEdicao.idSolicitacao;
+    
+    google.script.run
+      .withSuccessHandler(function(resposta) {
+        mostrarLoading(false);
+        mostrarStatus(resposta, true);
+        voltarParaInicio();
+        buscarHistorico(); // Volta e recarrega o histórico
+      })
+      .withFailureHandler(function(error) {
+        mostrarLoading(false);
+        mostrarStatus('Erro ao atualizar: ' + error.message, false);
+      })
+      .salvarEdicaoSolicitacaoCRUE(dados);
+  } else {
+    google.script.run
+      .withSuccessHandler(function(resposta) {
+        mostrarLoading(false);
+        mostrarStatus(resposta, true);
+        
+        // Limpa os campos do formulário para uma nova entrada
+        document.getElementById('novo_idPaciente').value = '';
+        document.getElementById('novo_nomePaciente').value = '';
+        document.getElementById('novo_sexo').value = '';
+        document.getElementById('novo_idade').value = '';
+        document.getElementById('novo_leito').value = '';
+        document.getElementById('novo_dataSolicitacao').value = '';
+        document.getElementById('novo_horaSolicitacao').value = '';
+        document.getElementById('novo_tipoMovimento').value = '';
+        document.getElementById('novo_recursoSolicitado').value = '';
+        document.getElementById('novo_tipoTransporteSolicitado').value = '';
+        document.getElementById('novo_medicoSolicitante').value = '';
+        document.getElementById('novo_destino').value = '';
+        document.getElementById('novo_medico').value = '';
+        document.getElementById('novo_enfermagem').value = '';
+        document.getElementById('novo_condutor').value = '';
+        document.getElementById('novo_numeroViatura').value = '';
+        document.getElementById('novo_horaSaida').value = '';
+        document.getElementById('novo_horaRetorno').value = '';
+        document.getElementById('novo_observacoes').value = '';
+        document.getElementById('novo_recursoRegulado').value = '';
+        document.getElementById('novo_executante').value = '';
+        document.getElementById('novo_situacao').value = '';
+        document.getElementById('novo_horaRegulacao').value = '';
+
+        voltarParaInicio();
+        buscarHistorico(); // Volta e recarrega o histórico
+      })
+      .withFailureHandler(function(error) {
+        mostrarLoading(false);
+        mostrarStatus('Erro ao salvar: ' + error.message, false);
+      })
+      .salvarNovaSolicitacaoCRUE(dados);
+  }
+}
+
+function excluirSolicitacao(idSolicitacao) {
+  mostrarLoading(true);
+
+  google.script.run
+    .withSuccessHandler(function(resposta) {
+      mostrarLoading(false);
+      mostrarStatus(resposta, true);
+      buscarHistorico(); // Recarrega o histórico
+    })
+    .withFailureHandler(function(error) {
+      mostrarLoading(false);
+      mostrarStatus('Erro ao excluir: ' + error.message, false);
+    })
+    .excluirSolicitacaoPorId(idSolicitacao);
+}
+
+// ================== FUNÇÕES EXISTENTES (MANTIDAS OU COM AJUSTES MENORES) ================== //
+
+function toggleRelatorios() {
+  const relatoriosDiv = document.getElementById('relatoriosSection');
+  const botao = document.querySelector('.btn-primary[onclick="toggleRelatorios()"]');
+  
+  if (relatoriosDiv.style.display === 'none' || !relatoriosDiv.style.display) {
+    relatoriosDiv.style.display = 'block';
+    botao.textContent = '❌ Ocultar Relatórios';
+    ocultarSecoesPrincipais(); // Oculta o resto quando o relatório é mostrado
+  } else {
+    relatoriosDiv.style.display = 'none';
+    botao.textContent = '📊 Mostrar Relatórios';
+    // Quando oculta os relatórios, reexibe a seção de busca de paciente e histórico
+    document.getElementById('buscaPacienteSection').style.display = 'block';
+    if (historicoSolicitacoes.length > 0) { // Se houver histórico, mostra
+      document.getElementById('historicoDiv').style.display = 'block';
+    }
+    document.getElementById('status').style.display = 'none'; // Oculta status
+  }
+}
+
+function exibirResultado(resultado) {
+  const container = document.getElementById('resultadoRelatorio');
+  
+  if (!resultado || !resultado.dados || resultado.dados.length === 0) {
+    container.innerHTML = '<p class="mensagem-vazia">Nenhum dado encontrado com os filtros selecionados.</p>';
+    document.getElementById('btnExportar').style.display = 'none';
+    return;
+  }
+
+  let html = `<div class="scrollable-table"><table class="tabela-relatorio"><thead><tr>`;
+  
+  resultado.colunas.forEach(coluna => {
+    html += `<th>${coluna}</th>`;
+  });
+  
+  html += `</tr></thead><tbody>`;
+  
+  resultado.dados.forEach((linha) => {
+    const isTotal = linha[resultado.colunas[0]] === 'TOTAL';
+    html += `<tr${isTotal ? ' class="total-row"' : ''}>`;
+    
+    resultado.colunas.forEach(coluna => {
+      const valor = linha[coluna];
+      html += `<td${(typeof valor === 'number' || (typeof valor === 'string' && /^\d+(\.\d+)?$/.test(valor))) ? ' class="numero"' : ''}>${valor ?? '-'}</td>`;
+    });
+    
+    html += `</tr>`;
+  });
+  
+  html += `</tbody></table></div>`;
+  container.innerHTML = html;
+  document.getElementById('btnExportar').style.display = 'inline-block';
+}
+
+
+function validarDadosSolicitacao(dados) {
+  const camposObrigatorios = [
+    'idPaciente', 'dataSolicitacao', 'horaSolicitacao',
+    'tipoMovimento', 'recursoSolicitado', 'tipoTransporteSolicitado', 'medicoSolicitante'
+  ];
+  
+  for (const campo of camposObrigatorios) {
+    if (!dados[campo]) {
+      mostrarStatus(`O campo ${campo} é obrigatório`, false);
+      return false;
+    }
+  }
+  return true;
+}
+
+// Ajustada para voltar corretamente para as seções principais
+function voltarParaInicio() {
+  document.getElementById('novaSolicitacaoDiv').style.display = 'none';
+  document.getElementById('historicoDiv').style.display = 'block'; // Mostra o histórico
+  document.getElementById('buscaPacienteSection').style.display = 'block'; // Mostra a busca do paciente
+  document.getElementById('status').style.display = 'none'; // Oculta status
+  // Limpa o campo ID do paciente e o histórico de exibição se quiser
+  // document.getElementById('idPaciente').value = '';
+  // document.getElementById('listaSolicitacoes').innerHTML = '';
+  mostrarStatus('Retornando para histórico...');
+}
+
+function carregarListaRecursos() {
+  google.script.run
+    .withSuccessHandler(function(recursos) {
+      const dataList = document.getElementById('listaRecursos');
+      dataList.innerHTML = '';
+      recursos.forEach(function(recurso) {
+        const option = document.createElement('option');
+        option.value = recurso;
+        dataList.appendChild(option);
+      });
+    })
+    .withFailureHandler(function(error) {
+      mostrarStatus('Erro ao carregar recursos: ' + error.message, false);
+    })
+    .obterListaRecursos(); 
+}
+
+function atualizarFiltrosAdicionais() {
+  const tipoRelatorio = document.getElementById('tipoRelatorio').value;
+  const filtroAdicional = document.getElementById('filtroAdicional');
+  const filtroEspecifico = document.getElementById('filtroEspecifico');
+  
+  filtroAdicional.style.display = 'none';
+  filtroEspecifico.innerHTML = '';
+  
+  if (tipoRelatorio === 'tipo_transporte') {
+    filtroAdicional.style.display = 'block';
+    const opcoes = ['todos', 'Básico', 'Intermediário', 'UTI'];
+    opcoes.forEach(opcao => {
+      const option = document.createElement('option');
+      option.value = opcao;
+      option.textContent = opcao;
+      filtroEspecifico.appendChild(option);
+    });
+  }
+}
+
+// ================== INICIALIZAÇÃO ================== //
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('loginContainer').style.display = 'block';
+  
+  // Oculta todas as seções do app inicialmente
+  document.getElementById('appContainer').style.display = 'none';
+  document.getElementById('relatoriosSection').style.display = 'none';
+  document.getElementById('historicoDiv').style.display = 'none';
+  document.getElementById('novaSolicitacaoDiv').style.display = 'none';
+  // Garante que a seção de busca de paciente esteja visível após o login
+  // Isso será tratado na fazerLogin ao exibir appContainer
+  // document.getElementById('buscaPacienteSection').style.display = 'none'; 
+  
+  carregarListaRecursos();
+  
+  document.getElementById('tipoRelatorio').addEventListener('change', atualizarFiltrosAdicionais);
+  atualizarFiltrosAdicionais();
+});
+
+</script>
+
+</body>
+</html>
