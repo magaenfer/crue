@@ -24,19 +24,23 @@
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
     }
 
-    .header-osasco img {
-      max-height: 60px;
-    }
-
-    .header-osasco h1 {
-      margin: 0;
-      font-size: 20px;
-      flex-grow: 1;
-      text-align: center;
-    }
-
     .logo-container {
       flex-shrink: 0;
+    }
+
+    .header-title {
+      flex-grow: 1;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .header-title h1,
+    .header-title h2 {
+      margin: 2px 0;
+    }
+
+    .header-osasco img {
+      max-height: 60px;
     }
 
     .content {
@@ -72,8 +76,12 @@
     <div class="logo-container">
       <img src="osacoNovo.png" alt="Logo Prefeitura Osasco">
     </div>
-    </P><h1>Secretaria de Saúde</h1></P>
-    <p></p><h2>Diretoria Geral de Urgência e Emergência</h2><P>
+
+    <div class="header-title">
+      <h1>Secretaria de Saúde</h1>
+      <h2>Diretoria Geral de Urgência e Emergência</h2>
+    </div>
+
     <div class="logo-container">
       <img src="DGUE.png" alt="Logo DGUE">
     </div>
